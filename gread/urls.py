@@ -18,6 +18,8 @@ urlpatterns = [
 
     # We need to register urls for other apps here in the base urls.py, in order to access them
     path('blogs/', include('blogs.urls')),
+    path('accounts/', include('accounts.urls')),
+
 ]
 
 urlpatterns += staticfiles_urlpatterns()
