@@ -1,6 +1,6 @@
-# EcoNotes
+# Gread
 
-EcoNotes aims to significantly contribute to environmental awareness and advocacy. By providing a dedicated platform for sharing green-related content, we will facilitate the dissemination of crucial information on environmental issues, sustainable practices, and eco-friendly innovations. Users can share their experiences, tips, and knowledge, fostering a community of like-minded individuals committed to environmental preservation. This collective effort will help raise awareness, inspire action, and promote sustainable living practices. Additionally, by highlighting green initiatives and success stories, our platform will motivate others to adopt environmentally friendly habits, ultimately contributing to a healthier and more sustainable planet.
+Gread aims to significantly contribute to environmental awareness and advocacy. By providing a dedicated platform for sharing green-related content, we will facilitate the dissemination of crucial information on environmental issues, sustainable practices, and eco-friendly innovations. Users can share their experiences, tips, and knowledge, fostering a community of like-minded individuals committed to environmental preservation. This collective effort will help raise awareness, inspire action, and promote sustainable living practices. Additionally, by highlighting green initiatives and success stories, our platform will motivate others to adopt environmentally friendly habits, ultimately contributing to a healthier and more sustainable planet.
 
 This project aims to utilize all fundamental functionalities of Django, creating a robust, user-friendly, and engaging platform dedicated to promoting environmental awareness and sharing valuable green environment information.
 
