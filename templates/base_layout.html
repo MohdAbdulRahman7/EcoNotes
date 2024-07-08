@@ -8,6 +8,19 @@
     <link rel="stylesheet" href="{% static 'styles.css' %}">
 </head>
 <body>
+    <header class = "wrapper">
+        <h1><a href="{% url 'blogs:blogs_list' %}"><img style="width: 55px; height: 55px" src="{% static 'logo.jpg' %}" alt="gread_branding"></a></h1>
+        <nav>
+            <ul>
+               <li>
+                   <form class="logout-link" action="{% url 'accounts:logout' %}" method="post">
+                       {% csrf_token %}
+                       <button type="submit">Logout</button>
+                   </form>
+               </li> 
+            </ul>
+        </nav>
+    </header>
     <div class="wrapper">
         {% block content %}
         {% endblock %}
