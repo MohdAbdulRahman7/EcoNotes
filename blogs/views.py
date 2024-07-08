@@ -1,7 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Blog
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from . import forms
 
 
 def blogs_list(request):
@@ -16,4 +17,15 @@ def blog_detail(request, slug):
 
 @login_required(login_url="/accounts/login/")  # Redirect if user not logged-in
 def blog_create(request):
-    return render(request, 'blogs/blog_create.html')
+    if request.method == 'POST':
+        # request.files as .POST does not include attached files data! :(
+        form = forms.CreateBlog(request.POST, request.FILES)
+        if form.is_valid():
+            # Save blog to the database
+            blog_instance = form.save(commit=False)
+            blog_instance.author = request.user
+            blog_instance.save()
+            return redirect('blogs:blogs_list')
+    else:
+        form = forms.CreateBlog()
+    return render(request, 'blogs/blog_create.html', {'form_UI': form})

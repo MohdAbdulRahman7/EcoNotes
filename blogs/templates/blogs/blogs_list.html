@@ -13,6 +13,7 @@
             {#calling function here from blogs class in models.py.#}
             <p>{{ blogs.shorter_body }}</p>
             <p> {{ blogs.pub_date }}</p>
+            <p class="author">added by {{ blogs.author.username }}</p>
             </div>
         {% endfor %}
     </div>

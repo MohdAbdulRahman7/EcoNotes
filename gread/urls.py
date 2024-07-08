@@ -7,12 +7,14 @@ Urls - call the functions in views.py. Views functions contain logic regd. what 
 from django.contrib import admin
 from django.urls import path, include  # here include is used to include other urls (from apps)
 from . import views  # importing views.py from current directory(hence used '.')
+from blogs import views as blogs_views
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns  #for loading static files
 from django.conf.urls.static import static #For media Files
 from django.conf import settings #importing all vars and functions from settins.py file
 
 urlpatterns = [
-    path('', views.homepage),
+    # path('', views.homepage),
+    path('', blogs_views.blogs_list, name='home'),
     path('admin/', admin.site.urls),
     path('about/', views.about, name='about'),
 
