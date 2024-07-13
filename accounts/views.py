@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout
 from django.contrib import messages
+from django.http import JsonResponse
 
 
 # Create your views here.
@@ -34,10 +35,18 @@ def login_view(request):
             login(request, user)
             if not request.session.get('cookie_consent_given'):
                 request.session['cookie_consent_needed'] = True  # Set session variable
-            if 'next' in request.POST:
-                return redirect(request.POST.get('next'))
+            # Check if cookie consent is given
+            cookie_consent = request.COOKIES.get(f'cookie_consent_{user.id}', None)
+            if cookie_consent == 'accepted':
+                if 'next' in request.POST:
+                    return redirect(request.POST.get('next'))
+                else:
+                    # Redirect to blogs list or desired page
+                    return redirect('blogs:blogs_list')
             else:
-                return redirect('blogs:blogs_list')
+                # Set session variable to show cookie consent banner
+                request.session['cookie_consent_needed'] = True
+                return redirect('home')  # Redirect to homepage or another page where banner is displayed
     else:
         form = AuthenticationForm()
     return render(request, 'accounts/login.html', {'form': form})
@@ -51,3 +60,14 @@ def logout_view(request):
 
 def reset_view(request):
     return redirect('blogs:')
+
+
+def clear_cookie_consent_session(request):
+    if request.method == 'POST':
+        if 'cookie_consent_needed' in request.session:
+            del request.session['cookie_consent_needed']
+            return JsonResponse({'message': 'Session variable cleared successfully'})
+        else:
+            return JsonResponse({'message': 'Session variable not found'}, status=404)
+    else:
+        return JsonResponse({'message': 'Method not allowed'}, status=405)

@@ -71,12 +71,12 @@
             </div>
         </div>
     </footer>
-    
-    
-  <!-- Cookie Consent Banner -->
+
+
+<!-- Cookie Consent Banner -->
     {% if user.is_authenticated %}
-        {% if not request.COOKIES.cookie_consent %}
-            <div id="cookie-consent-banner" style="position: fixed; bottom: 0; width: 100%; background-color: #000; color: #fff; padding: 10px; text-align: center;">
+        {% if not cookie_exists %}
+            <div id="cookie-consent-banner" style="position: fixed; bottom: 0; width: 100%; background-color: #000; color: #fff; padding: 10px; text-align: center; display: none;">
                 <p>We use cookies to improve your experience. Do you accept cookies?</p>
                 <button id="accept-cookies">Accept</button>
                 <button id="reject-cookies">Reject</button>
@@ -84,128 +84,122 @@
         {% endif %}
     {% endif %}
 
-  <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var cookieConsent = getCookie("cookie_consent");
-            var cookieBanner = document.getElementById("cookie-consent-banner");
-
-            if (!cookieConsent && cookieBanner) {
-                cookieBanner.style.display = "block";
-            }
-
-            document.getElementById("accept-cookies").addEventListener("click", function() {
-                setCookie("cookie_consent", "accepted", 365);
-                if (cookieBanner) {
-                    cookieBanner.style.display = "none";
-                }
-{#                {% if request.session.cookie_consent_needed %}#}
-{#                    delete request.session.cookie_consent_needed;#}
-{#                {% endif %}#}
-            });
-
-            document.getElementById("reject-cookies").addEventListener("click", function() {
-                setCookie("cookie_consent", "rejected", 365);
-                if (cookieBanner) {
-                    cookieBanner.style.display = "none";
-                }
-{#                {% if request.session.cookie_consent_needed %}#}
-{#                    delete request.session.cookie_consent_needed;#}
-{#                {% endif %}#}
-            });
-
-            function setCookie(name, value, days) {
-                var expires = "";
-                if (days) {
-                    var date = new Date();
-                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-                    expires = "; expires=" + date.toUTCString();
-                }
-                document.cookie = name + "=" + (value || "") + expires + "; path=/";
-            }
-
-            function getCookie(name) {
-                var nameEQ = name + "=";
-                var ca = document.cookie.split(';');
-                for (var i = 0; i < ca.length; i++) {
-                    var c = ca[i];
-                    while (c.charAt(0) === ' ') {
-                        c = c.substring(1, c.length);
-                    }
-                    if (c.indexOf(nameEQ) === 0) {
-                        return c.substring(nameEQ.length, c.length);
-                    }
-                }
-                return null;
-            }
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var userId = "{{ user.id }}";
+        var cookieConsent = getCookie("cookie_consent_" + userId);
+        var sessionConsentNeeded = "{{ request.session.cookie_consent_needed }}";
+        console.log("Consent: ", cookieConsent + "   " + "session: ", sessionConsentNeeded);
+        if (!cookieConsent && sessionConsentNeeded === "True") {
+            console.log("INSIDE!");
+            document.getElementById("cookie-consent-banner").style.display = "block";
+        }
+        var next = "{{ cookie_exists }}";
+console.log("REQ: ", next);
+        document.getElementById("accept-cookies").addEventListener("click", function() {
+            setCookie("cookie_consent_" + userId, "accepted", 365);
+            document.getElementById("cookie-consent-banner").style.display = "none";
+            // Send AJAX request to clear session variable
+            clearCookieConsentSession();
         });
-    </script>
+
+        document.getElementById("reject-cookies").addEventListener("click", function() {
+            setCookie("cookie_consent_" + userId, "rejected", 365);
+            document.getElementById("cookie-consent-banner").style.display = "none";
+            // Send AJAX request to clear session variable
+            clearCookieConsentSession();
+        });
+    });
+
+    function setCookie(name, value, days) {
+        var expires = "";
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days*24*60*60*1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+    }
+
+    function getCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0;i < ca.length;i++) {
+            var c = ca[i];
+            while (c.charAt(0)===' ') c = c.substring(1,c.length);
+            if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length,c.length);
+        }
+        return null;
+    }
+
+    function clearCookieConsentSession() {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "accounts/clear_cookie_consent_session/", true);
+        {#xhr.open("POST", "{% url 'accounts:clear_cookie_consent_session' %}", true);#}
+        xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+        xhr.send();
+    }
+</script>
 
 
-    
-  <!-- Cookie Consent Banner -->
-{#    {% if user.is_authenticated %}#}
-{#        {% if request.session.cookie_consent_needed %}#}
-{#            <div id="cookie-consent-banner" style="position: fixed; bottom: 0; width: 100%; background-color: #000; color: #fff; padding: 10px; text-align: center;">#}
-{#                <p>We use cookies to improve your experience. Do you accept cookies?</p>#}
-{#                <button id="accept-cookies">Accept</button>#}
-{#                <button id="reject-cookies">Reject</button>#}
-{#            </div>#}
-{#        {% endif %}#}
-{#    {% endif %}#}
+
+{#  <script>#}
+{#        document.addEventListener("DOMContentLoaded", function() {#}
+{#            var cookieConsent = getCookie("cookie_consent");#}
+{#            var cookieBanner = document.getElementById("cookie-consent-banner");#}
 {##}
-{#<script>#}
-{#    document.addEventListener("DOMContentLoaded", function() {#}
-{#        var cookieConsent = getCookie("cookie_consent");#}
-{#        var sessionConsentNeeded = "{{ request.session.cookie_consent_needed|default_if_none:'False' }}"; // Ensure default if None#}
-{##}
-{#        console.log("Cookie Consent from Cookie:", cookieConsent);#}
-{#        console.log("Consent Needed from Session:", sessionConsentNeeded);#}
-{##}
-{#        if (!cookieConsent && sessionConsentNeeded === "True") {#}
-{#            console.log("Inside displaying consent banner!");#}
-{#            document.getElementById("cookie-consent-banner").style.display = "block";#}
-{#        }#}
-{##}
-{#        document.getElementById("accept-cookies").addEventListener("click", function() {#}
-{#            setCookie("cookie_consent", "accepted", 365);#}
-{#            document.getElementById("cookie-consent-banner").style.display = "none";#}
-{#            {% if request.session.cookie_consent_needed %}#}
-{#                document.getElementById("cookie-consent-banner").remove();#}
-{#                delete request.session.cookie_consent_needed;#}
-{#            {% endif %}#}
-{#        });#}
-{##}
-{#        document.getElementById("reject-cookies").addEventListener("click", function() {#}
-{#            setCookie("cookie_consent", "rejected", 365);#}
-{#            document.getElementById("cookie-consent-banner").style.display = "none";#}
-{#            {% if request.session.cookie_consent_needed %}#}
-{#                document.getElementById("cookie-consent-banner").remove();#}
-{#                delete request.session.cookie_consent_needed;#}
-{#            {% endif %}#}
-{#        });#}
-{##}
-{#        function setCookie(name, value, days) {#}
-{#            var expires = "";#}
-{#            if (days) {#}
-{#                var date = new Date();#}
-{#                date.setTime(date.getTime() + (days*24*60*60*1000));#}
-{#                expires = "; expires=" + date.toUTCString();#}
+{#            if (!cookieConsent && cookieBanner) {#}
+{#                cookieBanner.style.display = "block";#}
 {#            }#}
-{#            document.cookie = name + "=" + (value || "")  + expires + "; path=/";#}
-{#        }#}
 {##}
-{#        function getCookie(name) {#}
-{#            var nameEQ = name + "=";#}
-{#            var ca = document.cookie.split(';');#}
-{#            for(var i=0;i < ca.length;i++) {#}
-{#                var c = ca[i];#}
-{#                while (c.charAt(0)===' ') c = c.substring(1,c.length);#}
-{#                if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length,c.length);#}
+{#            document.getElementById("accept-cookies").addEventListener("click", function() {#}
+{#                setCookie("cookie_consent", "accepted", 365);#}
+{#                if (cookieBanner) {#}
+{#                    cookieBanner.style.display = "none";#}
+{#                }#}
+{#                {% if request.session.cookie_consent_needed %}#}
+{#                    delete request.session.cookie_consent_needed;#}
+{#                {% endif %}#}
+{#            });#}
+{##}
+{#            document.getElementById("reject-cookies").addEventListener("click", function() {#}
+{#                setCookie("cookie_consent", "rejected", 365);#}
+{#                if (cookieBanner) {#}
+{#                    cookieBanner.style.display = "none";#}
+{#                }#}
+{#                {% if request.session.cookie_consent_needed %}#}
+{#                    delete request.session.cookie_consent_needed;#}
+{#                {% endif %}#}
+{#            });#}
+{##}
+{#            function setCookie(name, value, days) {#}
+{#                var expires = "";#}
+{#                if (days) {#}
+{#                    var date = new Date();#}
+{#                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));#}
+{#                    expires = "; expires=" + date.toUTCString();#}
+{#                }#}
+{#                document.cookie = name + "=" + (value || "") + expires + "; path=/";#}
 {#            }#}
-{#            return null;#}
-{#        }#}
-{#    });#}
-{#</script>#}
+{##}
+{#            function getCookie(name) {#}
+{#                var nameEQ = name + "=";#}
+{#                var ca = document.cookie.split(';');#}
+{#                for (var i = 0; i < ca.length; i++) {#}
+{#                    var c = ca[i];#}
+{#                    while (c.charAt(0) === ' ') {#}
+{#                        c = c.substring(1, c.length);#}
+{#                    }#}
+{#                    if (c.indexOf(nameEQ) === 0) {#}
+{#                        return c.substring(nameEQ.length, c.length);#}
+{#                    }#}
+{#                }#}
+{#                return null;#}
+{#            }#}
+{#        });#}
+{#    </script>#}
+
+
 
 
 </body>
