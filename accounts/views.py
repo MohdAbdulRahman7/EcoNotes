@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout
+from django.contrib import messages
 
 
 # Create your views here.
@@ -12,6 +13,10 @@ def signup_view(request):
             user_name = form.save()  # Save the form data to the database
             # Log User In
             login(request, user_name)
+            # Cookie CONSENT
+            request.session['cookie_consent_needed'] = True  # Set session variable
+            messages.info(request, "Welcome! Please review and accept our cookie policy.")
+
             return redirect('blogs:blogs_list')  # appname: named url value
     else:  # Get Method Called
         form = UserCreationForm()
@@ -27,6 +32,8 @@ def login_view(request):
             # Login User
             user = form.get_user()
             login(request, user)
+            if not request.session.get('cookie_consent_given'):
+                request.session['cookie_consent_needed'] = True  # Set session variable
             if 'next' in request.POST:
                 return redirect(request.POST.get('next'))
             else:
@@ -40,3 +47,7 @@ def logout_view(request):
     if request.method == 'POST':
         logout(request)
         return redirect('blogs:blogs_list')
+
+
+def reset_view(request):
+    return redirect('blogs:')

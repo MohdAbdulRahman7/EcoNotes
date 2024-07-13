@@ -1,0 +1,26 @@
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Password reset on localhost:8000
+From: webmaster@localhost
+To: peach@gmail.com
+Date: Fri, 12 Jul 2024 22:30:42 -0000
+Message-ID: 
+ <172082344272.11920.803157096613013566@AbdulRahmans-PC.cgocable.net>
+
+
+You're receiving this email because you requested a password reset for your user account at localhost:8000.
+
+Please go to the following page and choose a new password:
+
+http://localhost:8000/accounts/reset/NA/ca2e36-9f1d102fefdc0a6ca004b335d5a03c96/
+
+Your username, in case you’ve forgotten: peach
+
+Thanks for using our site!
+
+The localhost:8000 team
+
+
+
+-------------------------------------------------------------------------------

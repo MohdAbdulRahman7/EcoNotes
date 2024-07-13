@@ -13,14 +13,15 @@ from django.conf.urls.static import static #For media Files
 from django.conf import settings #importing all vars and functions from settins.py file
 
 urlpatterns = [
-    # path('', views.homepage),
-    path('', blogs_views.blogs_list, name='home'),
+    path('', views.homepage, name='home'),
+    # path('', blogs_views.blogs_list, name='home'),
     path('admin/', admin.site.urls),
     path('about/', views.about, name='about'),
 
     # We need to register urls for other apps here in the base urls.py, in order to access them
     path('blogs/', include('blogs.urls')),
     path('accounts/', include('accounts.urls')),
+    path("accounts/", include("django.contrib.auth.urls")),
 
 ]
 
