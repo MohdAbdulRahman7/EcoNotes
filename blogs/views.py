@@ -1,9 +1,11 @@
-from django.shortcuts import render, redirect
-from .models import Blog
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Blog, Member
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from . import forms
 from django.db.models import Q
+from django.contrib import messages
+from .forms import CreateBlog
 
 
 # def blogs_list(request):
@@ -33,22 +35,139 @@ def blogs_list(request):
     return render(request, 'blogs/blogs_list.html', {'blog_details': blogs, 'query': query, 'field': field})
 
 
+# def blog_detail(request, slug):
+#     blog = Blog.objects.get(slug=slug)
+#
+#     # Track recently viewed blogs -- FEATURE
+#     recently_viewed = request.session.get('recently_viewed', [])
+#     if slug not in recently_viewed:
+#         recently_viewed.append(slug)
+#         if len(recently_viewed) > 5:  # Limit the list to the last 5 viewed blogs
+#             recently_viewed.pop(0)
+#         request.session['recently_viewed'] = recently_viewed
+#
+#     return render(request, 'blogs/blog_detail.html', {'blog': blog})
+
+
 def blog_detail(request, slug):
-    blog = Blog.objects.get(slug=slug)
+    blog = get_object_or_404(Blog, slug=slug)
+
+    # Retrieve the current list of recently viewed slugs from the session
+    recently_viewed = request.session.get('recently_viewed', [])
+
+    # If the slug is already in the list, remove it
+    if slug in recently_viewed:
+        recently_viewed.remove(slug)
+
+    # Insert the current blog's slug at the beginning of the list
+    recently_viewed.insert(0, slug)
+
+    # Ensure the list does not exceed 5 items
+    if len(recently_viewed) > 5:
+        recently_viewed.pop()
+
+    # Update the session with the modified list
+    request.session['recently_viewed'] = recently_viewed
+
     return render(request, 'blogs/blog_detail.html', {'blog': blog})
+
+
+# @login_required(login_url="/accounts/login/")  # Redirect if user not logged-in
+# def blog_create(request):
+#     if request.method == 'POST':
+#         # request.files as .POST does not include attached files data! :(
+#         form = forms.CreateBlog(request.POST, request.FILES)
+#         if form.is_valid():
+#             # Save blog to the database
+#             blog_instance = form.save(commit=False)
+#             blog_instance.author = request.user
+#             blog_instance.save()
+#             return redirect('blogs:blogs_list')
+#     else:
+#         form = forms.CreateBlog()
+#     return render(request, 'blogs/blog_create.html', {'form_UI': form})
 
 
 @login_required(login_url="/accounts/login/")  # Redirect if user not logged-in
 def blog_create(request):
+    draft_key = 'blog_draft'
     if request.method == 'POST':
-        # request.files as .POST does not include attached files data! :(
-        form = forms.CreateBlog(request.POST, request.FILES)
+        form = CreateBlog(request.POST, request.FILES)
         if form.is_valid():
-            # Save blog to the database
-            blog_instance = form.save(commit=False)
-            blog_instance.author = request.user
-            blog_instance.save()
-            return redirect('blogs:blogs_list')
+            if 'publish' in request.POST:
+                # Save the blog to the database
+                blog = form.save(commit=False)
+                blog.author = request.user  # Set the author to the currently logged-in user
+                blog.status = 'published'
+                blog.save()
+                # Clear the draft from session
+                if draft_key in request.session:
+                    del request.session[draft_key]
+                return redirect('blogs:blogs_list')
+            elif 'save_draft' in request.POST:
+                # Save the draft in session
+                draft_data = {
+                    'title': form.cleaned_data['title'],
+                    'body': form.cleaned_data['body'],
+                }
+                # Handle the thumbnail field correctly
+                thumbnail = form.cleaned_data['thumbnail']
+                if thumbnail:
+                    if hasattr(thumbnail, 'name'):
+                        draft_data['thumbnail'] = thumbnail.name
+                    else:
+                        draft_data['thumbnail'] = thumbnail
+                else:
+                    draft_data['thumbnail'] = None
+
+                request.session[draft_key] = draft_data
+                return redirect('blogs:drafts_list')
     else:
-        form = forms.CreateBlog()
-    return render(request, 'blogs/blog_create.html', {'form_UI': form})
+        form = CreateBlog()
+    return render(request, 'blogs/blog_create.html', {'form': form})
+
+
+@login_required(login_url="/accounts/login/")  # Redirect to login page if not logged in
+def recently_viewed_blogs(request):
+    recently_viewed = request.session.get('recently_viewed', [])
+    valid_blogs = []
+    valid_slugs = []
+
+    for slug in recently_viewed:
+        try:
+            blog = Blog.objects.get(slug=slug)
+            valid_blogs.append(blog)
+            valid_slugs.append(slug)
+        except Blog.DoesNotExist:
+            continue
+
+    # Update session with only valid slugs
+    request.session['recently_viewed'] = valid_slugs
+
+    return render(request, 'blogs/recently_viewed.html', {'blogs': valid_blogs})
+
+
+@login_required(login_url="/accounts/login/")  # Redirect if user not logged-in
+def drafts_list(request):
+    session_draft = request.session.get('blog_draft', None)
+    # user_drafts = Blog.objects.filter(author=request.user, status='draft')
+
+    return render(request, 'blogs/drafts_list.html', {
+        'session_draft': session_draft,
+        # 'user_drafts': user_drafts,
+    })
+
+
+@login_required(login_url="/accounts/login/")  # Redirect if user not logged-in
+def load_draft(request):
+    draft_data = request.session.get('blog_draft')
+
+    if draft_data:
+        form = CreateBlog(initial={
+            'title': draft_data.get('title'),
+            'body': draft_data.get('body'),
+            'thumbnail': draft_data.get('thumbnail'),
+        })
+        return render(request, 'blogs/blog_create.html', {'form': form})
+    else:
+        return redirect('blogs:drafts_list')
