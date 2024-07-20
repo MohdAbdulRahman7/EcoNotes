@@ -1,0 +1,46 @@
+{% extends 'base_layout.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Events List</h2>
+    <a href="{% url 'events:add_event' %}" class="btn btn-primary">Add Event</a>
+<br>
+    <a href="{% url 'events:my_events' %}">Registered Events</a>
+    <div class="events-list">
+        {% for event in events %}
+            <div class="event-card">
+                <h3>{{ event.title }}</h3>
+                <p>{{ event.description }}</p>
+                <p>Date & Time: {{ event.datetime }}</p>
+                <p>Location: {{ event.location }}</p>
+                <p>Enrollment Limit: {{ event.enrollment_limit }}</p>
+                <p>Enrolled Users: {{ event.enrolled_users.count }}</p>
+                {% if event.additional_details %}
+                    <p>Additional Details: {{ event.additional_details }}</p>
+                {% endif %}
+                {% if event.contact_information %}
+                    <p>Contact Information: {{ event.contact_information }}</p>
+                {% endif %}
+                <div class="enroll-btn">
+                    {% if request.user.is_authenticated and not event.is_full and request.user not in event.enrolled_users.all %}
+                        <form method="post" action="{% url 'events:enroll_event' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="event_id" value="{{ event.id }}">
+                            <button type="submit" class="btn btn-success">Enroll</button>
+                        </form>
+                    {% elif request.user in event.enrolled_users.all %}
+                        <form method="post" action="{% url 'events:unenroll_event' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="event_id" value="{{ event.id }}">
+                            <button type="submit" class="btn btn-danger">Unenroll</button>
+                        </form>
+                        <p>You are enrolled in this event.</p>
+                    {% else %}
+                        <p>Event is full.</p>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

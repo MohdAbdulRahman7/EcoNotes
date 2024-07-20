@@ -9,6 +9,7 @@ retrieve model from db etc.
 
 from django.db import models
 from django.contrib.auth.models import User
+from accounts.models import Member
 
 
 class Blog(models.Model):
@@ -28,38 +29,30 @@ class Blog(models.Model):
         return self.body[:70] + "..."
 
 
-class Member(User):
-    # user = models.OneToOneField(User, on_delete=models.CASCADE)
-    bio = models.TextField(blank=True)
-    profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
-    city = models.CharField(max_length=100, blank=True, null=True)
-    province = models.CharField(max_length=100, blank=True, null=True)
-
-    def __str__(self):
-        return self.user.username
-
-    @property
-    def number_of_blogs_posted(self):
-        return Blog.objects.filter(author=self, status='published').count()
-
-
 # Model for Comments on Blogs
 class Comment(models.Model):
     post = models.ForeignKey(Blog, on_delete=models.CASCADE)
-    # author = models.ForeignKey(User, on_delete=models.CASCADE)
-    author = models.ForeignKey(Member, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     body = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    """
+    Note: ForeignKey establishes a one-to-many relationship.
+    Hence a single comment can have many replies, but each reply is related to exactly one parent comment.
+    """
+    parent = models.ForeignKey('self', null=True, blank=True, related_name='replies', on_delete=models.CASCADE)
 
     def __str__(self):
         return f"Comment by {self.author} on {self.post}"
 
+    @property
+    def is_reply(self):
+        return self.parent is not None
+
 
 # Model for Likes on Blogs
 class Like(models.Model):
-    post = models.ForeignKey(Blog, on_delete=models.CASCADE)
-    # user = models.ForeignKey(User, on_delete=models.CASCADE)
-    user = models.ForeignKey(Member, on_delete=models.CASCADE)
+    post = models.ForeignKey(Blog, on_delete=models.CASCADE, related_name='likes')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -68,15 +61,3 @@ class Like(models.Model):
     def __str__(self):
         return f"{self.user} likes {self.post}"
 
-
-# Model for Events around you for green initiatives
-class Event(models.Model):
-    author = models.ForeignKey(Member, on_delete=models.CASCADE)
-    title = models.CharField(max_length=200)
-    description = models.TextField()
-    date = models.DateField()
-    location = models.CharField(max_length=255)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.title

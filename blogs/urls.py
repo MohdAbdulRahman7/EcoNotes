@@ -18,5 +18,6 @@ urlpatterns = [
     path('recently_viewed/', views.recently_viewed_blogs, name='recently_viewed_blogs'),
     # below regex: slug can be any character(word, number etc), also includes'-' and length is nolimit.
     path('<slug:slug>/', views.blog_detail, name='blog_detail'),
+    path('<slug:slug>/like/', views.like_post, name='like_post'),
 
 ]

@@ -36,6 +36,7 @@
             <p>{{ blogs.shorter_body }}</p>
             <p> {{ blogs.pub_date }}</p>
             <p class="author">added by {{ blogs.author.username }}</p>
+            <p>Likes: {{ blogs.likes_count }}</p>
             </div>
         {% endfor %}
     {% else %}

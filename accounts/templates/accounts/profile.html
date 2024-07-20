@@ -1,0 +1,16 @@
+<!-- profile.html -->
+{% extends 'base_layout.html' %}
+
+{% block content %}
+    <h1>{{ member.user.username }}'s Profile</h1>
+
+    {% if is_own_profile and visits is not None %}
+        <p>You have visited this site {{ visits }} times.</p>
+    {% endif %}
+
+    <p>Bio: {{ member.bio }}</p>
+    <p>City: {{ member.city }}</p>
+    <p>Province: {{ member.province }}</p>
+    <p>Number of Blogs Posted: {{ member.number_of_blogs_posted }}</p>
+    <img src="{{ member.profile_picture.url }}" alt="Profile Picture" />
+{% endblock %}

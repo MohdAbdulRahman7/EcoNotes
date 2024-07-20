@@ -1,0 +1,26 @@
+/* Example CSS to customize admin colors */
+body {
+    background-color: #f0f0f0; /* Change background color */
+}
+
+.header {
+    background-color: green; /* Change header color */
+}
+
+#header h1 {
+    color: #fff; /* Change header text color */
+}
+
+#header{
+    background-color: green;
+}
+
+.navbar {
+    background-color: red; /* Change navigation bar color */
+}
+
+.navbar a {
+    color: #fff; /* Change navigation bar link color */
+}
+
+/* Add more custom styles as needed */

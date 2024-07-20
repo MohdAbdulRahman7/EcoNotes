@@ -11,17 +11,21 @@ from blogs import views as blogs_views
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns  #for loading static files
 from django.conf.urls.static import static #For media Files
 from django.conf import settings #importing all vars and functions from settins.py file
+from accounts.admin_site import custom_admin_site
+
 
 urlpatterns = [
     path('', views.homepage, name='home'),
     # path('', blogs_views.blogs_list, name='home'),
     path('admin/', admin.site.urls),
+    # path('admin/', custom_admin_site.urls),
     path('about/', views.about, name='about'),
 
     # We need to register urls for other apps here in the base urls.py, in order to access them
     path('blogs/', include('blogs.urls')),
     path('accounts/', include('accounts.urls')),
     path("accounts/", include("django.contrib.auth.urls")),
+    path('events/', include('events.urls')),
 
 ]
 

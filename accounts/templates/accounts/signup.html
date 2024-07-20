@@ -2,9 +2,9 @@
 
 {% block content %}
     <h1>SignUp</h1>
-    <form class="site-form" action="/accounts/signup/" method="post">
+    <form class="site-form" action="/accounts/signup/" method="post" enctype="multipart/form-data">
     {% csrf_token %}
-        {{ form }}
+        {{ form.as_p }}
     <input type="submit" name="" value="Signup">
     </form>
 {% endblock %}

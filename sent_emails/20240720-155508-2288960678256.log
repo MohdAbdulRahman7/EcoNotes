@@ -1,0 +1,26 @@
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Password reset on localhost:8000
+From: webmaster@localhost
+To: peach@peach.com
+Date: Sat, 20 Jul 2024 19:55:08 -0000
+Message-ID: 
+ <172150530817.46328.8236420906805474196@AbdulRahmans-PC.uwindsor.ca>
+
+
+You're receiving this email because you requested a password reset for your user account at localhost:8000.
+
+Please go to the following page and choose a new password:
+
+http://localhost:8000/accounts/reset/Mjg/cah07w-20eabf3f1a763e1dab66641a337b77da/
+
+Your username, in case you’ve forgotten: peach
+
+Thanks for using our site!
+
+The localhost:8000 team
+
+
+
+-------------------------------------------------------------------------------
