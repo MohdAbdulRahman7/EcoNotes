@@ -1,0 +1,26 @@
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Password reset on localhost:8000
+From: webmaster@localhost
+To: james@bond.com
+Date: Mon, 22 Jul 2024 05:39:13 -0000
+Message-ID: 
+ <172162675313.21896.3344520520770746957@AbdulRahmans-PC.cgocable.net>
+
+
+You're receiving this email because you requested a password reset for your user account at localhost:8000.
+
+Please go to the following page and choose a new password:
+
+http://localhost:8000/accounts/reset/Mjc/cajlxd-69d3c564ea387d90e8590d011d334167/
+
+Your username, in case you’ve forgotten: jamesbond
+
+Thanks for using our site!
+
+The localhost:8000 team
+
+
+
+-------------------------------------------------------------------------------

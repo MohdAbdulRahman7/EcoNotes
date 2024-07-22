@@ -14,6 +14,7 @@ class Event(models.Model):
     enrolled_users = models.ManyToManyField(User, related_name='enrolled_events', blank=True)
     additional_details = models.TextField(blank=True)
     contact_information = models.CharField(max_length=255, blank=True)
+    event_banner = models.ImageField(default='default.png', blank=True, null=True)
 
     def __str__(self):
         return self.title

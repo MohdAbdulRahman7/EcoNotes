@@ -1,10 +1,10 @@
 /* Example CSS to customize admin colors */
 body {
-    background-color: #f0f0f0; /* Change background color */
+    background-color: #81B5A1; /* Change background color */
 }
 
 .header {
-    background-color: green; /* Change header color */
+    background-color: #293E40; /* Change header color */
 }
 
 #header h1 {
@@ -12,7 +12,17 @@ body {
 }
 
 #header{
-    background-color: green;
+    background-color: #293E40;
+}
+
+.colMS h1 {
+    color: #121212;
+    font-weight: bold;
+    font-style: italic;
+}
+
+#recent-actions-module{
+    background-color: #293E40 !important;
 }
 
 .navbar {

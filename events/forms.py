@@ -9,7 +9,7 @@ class EventForm(forms.ModelForm):
     class Meta:
         model = Event
         fields = ['title', 'description', 'datetime', 'location', 'enrollment_limit', 'additional_details',
-                  'contact_information']
+                  'contact_information', 'event_banner']
 
 
 class EnrollmentForm(forms.Form):

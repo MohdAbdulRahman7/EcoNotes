@@ -9,10 +9,9 @@ from django.urls import path, include  # here include is used to include other u
 from . import views  # importing views.py from current directory(hence used '.')
 from blogs import views as blogs_views
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns  #for loading static files
-from django.conf.urls.static import static #For media Files
-from django.conf import settings #importing all vars and functions from settins.py file
+from django.conf.urls.static import static  #For media Files
+from django.conf import settings  #importing all vars and functions from settins.py file
 from accounts.admin_site import custom_admin_site
-
 
 urlpatterns = [
     path('', views.homepage, name='home'),
@@ -26,6 +25,10 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path("accounts/", include("django.contrib.auth.urls")),
     path('events/', include('events.urls')),
+
+    #     Test Urls
+    path('index/', views.index, name='index'),
+    path('contact/', views.contact, name='contact'),
 
 ]
 

@@ -9,8 +9,11 @@
 
 {% block branding %}
     <h1 id="site-name">
-        <a href="{% url 'admin:index' %}">GRead Admin Portal</a>
-    </h1>
+    <a href="{% url 'admin:index' %}">
+        <img src="{% static 'images/logo_faded.png' %}" alt="GRead Logo" style="height: 50px; vertical-align: middle;">
+        Admin Portal
+    </a>
+</h1>
 {% endblock %}
 
 {% block nav-global %}

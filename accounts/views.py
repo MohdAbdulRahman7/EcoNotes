@@ -16,7 +16,7 @@ def signup_view(request):
             login(request, user)
             request.session['cookie_consent_needed'] = True
             messages.info(request, "Welcome! Please review and accept our cookie policy.")
-            return redirect('blogs:blogs_list')
+            return redirect('home')
     else:
         form = CustomUserCreationForm()
     return render(request, 'accounts/signup.html', {'form': form})
@@ -48,7 +48,7 @@ def login_view(request):
                 if 'next' in request.POST:
                     return redirect(request.POST.get('next'))
                 else:
-                    return redirect('blogs:blogs_list')
+                    return redirect('home')
             else:
                 request.session['cookie_consent_needed'] = True
                 return redirect('home')

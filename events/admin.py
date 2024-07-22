@@ -9,7 +9,7 @@ class EventAdmin(admin.ModelAdmin):
     search_fields = ('title', 'description', 'location', 'author__username')
     ordering = ('-datetime',)
     fields = ('title', 'author', 'description', 'datetime', 'location', 'enrollment_limit', 'additional_details',
-              'contact_information', 'enrolled_users')
+              'contact_information', 'event_banner', 'enrolled_users')
     readonly_fields = ('created_at',)
 
 
